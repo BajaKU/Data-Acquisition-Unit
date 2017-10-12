@@ -39,6 +39,29 @@ Primary Execution
 -------------------------------------------*/
 void loop(){
 
+  for(int i = 0; i < 8; i += 1){
+    sensors_event_t se;
+  
+    if((foundAccels & (0x1 << i)) == (0x1 << i)){
+      accelerometers[i].getEvent(&se);
+      
+      forces[i][0] = se.acceleration.x;
+      forces[i][1] = se.acceleration.y;
+      forces[i][2] = se.acceleration.z;
+    }
+  }
+  
+  
+  for(int i = 0; i < 8; i += 1){
+    for(int j = 0; j < 3; j += 1){
+      Serial.print(forces[i][j]);
+      if(j < 2){
+        Serial.print(",");
+      }
+    }
+    Serial.print("\n");
+  }
+
 }
 
 /*-------------------------------------------
