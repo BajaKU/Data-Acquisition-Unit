@@ -13,6 +13,11 @@ Definition of fixed values
 #define MUX_ADDRESS 0x70
 
 /*-------------------------------------------
+Gyrometer Object
+-------------------------------------------*/
+Adafruit_L3GD20 gyro = Adafruit_L3GD20();
+
+/*-------------------------------------------
 Accelerometer Objects and Variables
 -------------------------------------------*/
 Adafruit_MMA8451 accelerometers[8];
@@ -23,6 +28,11 @@ double forces[8][3] = {0};
 Arduino System Setup
 -------------------------------------------*/
 void setup(){
+  
+  if(!gyro.begin()){
+    Serial.println("You screwed up. The gyrometer is not available.");
+    while(true){}
+  }
   
   //Initialize Accelerometers
   foundAccels = initAccel(0) | initAccel(1) | initAccel(2) | initAccel(3) | initAccel(4) | initAccel(5) | initAccel(6) | initAccel(7);
@@ -38,6 +48,7 @@ void setup(){
 Primary Execution
 -------------------------------------------*/
 void loop(){
+  gyro.read();
 
   for(int i = 0; i < 8; i += 1){
     sensors_event_t se;
@@ -51,7 +62,9 @@ void loop(){
     }
   }
   
-  
+  //Print data to serial console
+  Serial.print(gyro.data.x); Serial.print(","); Serial.print(gyro.data.y); Serial.print(","); Serial.print(gyro.data.z); Serial.print(",");
+    
   for(int i = 0; i < 8; i += 1){
     for(int j = 0; j < 3; j += 1){
       Serial.print(forces[i][j]);
@@ -61,7 +74,8 @@ void loop(){
     }
     Serial.print("\n");
   }
-
+  
+  delay(500)
 }
 
 /*-------------------------------------------
